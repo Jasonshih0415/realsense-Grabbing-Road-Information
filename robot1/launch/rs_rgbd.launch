@@ -199,7 +199,7 @@ Processing enabled by this node:
         <remap from="/camera/depth_zero" to="/camera/depth_zero" />
       </node>
       
-      <node name="rviz" pkg="rviz" type="rviz" args="-d /home/jetson/catkin_ws/src/robot1/rviz/pointcloud.rviz" />
+      <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot1)/rviz/pointcloud.rviz" />
 
       <node pkg="robot1" type="pub_ryp.py" name="get_angle_node" output="screen" />
       <node pkg="robot1" type="transfer_points.py" name="pointcloud_transform_node" output="screen" />
