@@ -201,8 +201,16 @@ Processing enabled by this node:
       
       <node name="rviz" pkg="rviz" type="rviz" args="-d $(find robot1)/rviz/pointcloud.rviz" />
 
-      <node pkg="robot1" type="pub_ryp.py" name="get_angle_node" output="screen" />
-      <node pkg="robot1" type="transfer_points.py" name="pointcloud_transform_node" output="screen" />
+
+      <node pkg="robot1" type="ryp_esp32.py" name="get_angle_node" output="screen" /> 
+      
+      <arg name="height" default="0.395" />
+    
+      <node pkg="robot1" type="transfer_points.py" name="pointcloud_transform_node" output="screen">
+        <param name="height" value="$(arg height)" />
+      </node>
+      
+      <node pkg="robot1" type="cal_4point.py" name="cal_4points" output="screen" /> 
       
       <!-- Publish registered XYZRGB point cloud with hardware registered input (ROS Realsense depth alignment) -->
       <!--  <node pkg="nodelet" type="nodelet" name="points_xyzrgb_hw_registered"

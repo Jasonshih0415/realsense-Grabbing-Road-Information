@@ -20,8 +20,11 @@ class DepthImageProcessor:
 
         # Retain columns from 160 to 480, set other columns to zero
         processed_image = np.zeros_like(cv_image)  # Create a zero array with the same shape as cv_image
-        processed_image[:, 160:480] = cv_image[:, 160:480]  # Retain data from columns 160 to 480
-        processed_image[processed_image > 3000.0] = 0
+        #processed_image = cv_image.copy()
+        processed_image[:, 190:260] = cv_image[:, 190:260]  # Retain data from columns 160 to 480
+        processed_image[:, 380:450] = cv_image[:, 380:450]  # Retain data from columns 160 to 480
+        processed_image[processed_image > 1500.0] = 0
+        processed_image[1::2, :] = 0
         
         min_value = np.min(processed_image)
         max_value = np.max(processed_image)
