@@ -40,7 +40,7 @@ class EPS32RYP:
                 response = self.ser.readline().decode('utf-8').strip()
                 if response:
                     self.process_data(response)
-                    print("response:",response)
+                    #print("response:",response)
             except serial.SerialException as e:
                 rospy.logerr(f"Serial read error: {e}")
             except UnicodeDecodeError as e:
@@ -68,14 +68,15 @@ class EPS32RYP:
             
             # Prepare and publish the RPY message
             rpy_msg = Vector3()
-            rpy_msg.x = self.pitch  
+            rpy_msg.x = self.pitch- 30.5
             rpy_msg.y = self.yaw 
             rpy_msg.z = self.roll  
-            print(f"pitch:{self.pitch},yaw:{self.yaw},roll:{self.roll}")
+            #print(f"pitch:{self.pitch},yaw:{self.yaw},roll:{self.roll}")
             self.rpy_publisher.publish(rpy_msg)
             
+     
             roll = math.radians(self.roll)
-            pitch = math.radians(self.pitch)
+            pitch = math.radians(self.pitch- 30.5)
             yaw = math.radians(self.yaw)
             # Create quaternion from roll, pitch, yaw
             quat = quaternion_from_euler(pitch, yaw, roll)

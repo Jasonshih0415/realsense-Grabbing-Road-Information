@@ -210,7 +210,7 @@ Processing enabled by this node:
         <param name="height" value="$(arg height)" />
       </node>
       
-      <node pkg="robot1" type="cal_4point.py" name="cal_4points" output="screen" /> 
+      <node pkg="robot1" type="cal_4point.py" name="cal_4points" output="screen" />
       
       <!-- Publish registered XYZRGB point cloud with hardware registered input (ROS Realsense depth alignment) -->
       <!--  <node pkg="nodelet" type="nodelet" name="points_xyzrgb_hw_registered"

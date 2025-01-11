@@ -12,6 +12,8 @@ import serial
 import std_msgs.msg
 from scipy.ndimage import gaussian_filter1d
 import ros_numpy
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import Point
 
 class PointCloudVisualizer:
     def __init__(self):
@@ -37,7 +39,8 @@ class PointCloudVisualizer:
                 
         rospy.Subscriber('/filtered_points_transform', PointCloud2, self.callback_pointcloud)
         self.pose_array_pub = rospy.Publisher("pose_array_topic", PoseArray, queue_size=10)
-        self.publisher = rospy.Publisher('filter_point', PointCloud2, queue_size=10)
+        self.publisher = rospy.Publisher('filter_point', PointCloud2, queue_size=10) 
+        self.marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
 
     def average_y(self, points, height_threshold=0.1):
         if points.size == 0:
@@ -122,7 +125,13 @@ class PointCloudVisualizer:
                 rb = back_r_path[:, :2].mean(axis=0)
                 rf_point = [rf[0], rf[1], front]
                 rb_point = [rb[0], rb[1], back]
-            
+                marker_points = [
+                    Point(x=rf[0], y=rf[1], z=front),
+                    Point(x=rb[0], y=rb[1], z=back)
+                ]
+                if i == 1.00:
+                    self.publish_marker(marker_points) 
+
                 if not np.isnan(rf_point).any() and not np.isnan(rb_point).any():
                     pitch_deg, dy, dz = self.calculate_pitch(rf_point, rb_point)
                     rate = 18/27
@@ -150,9 +159,30 @@ class PointCloudVisualizer:
         pose.orientation.y = quaternion[1]
         pose.orientation.z = quaternion[2]
         pose.orientation.w = quaternion[3]
-
         return pose 
-        
+    
+    def publish_marker(self, points):
+        marker = Marker()
+        # Marker properties
+        marker.header.frame_id = "camera_color_optical_frame"
+        marker.header.stamp = rospy.Time.now()
+        marker.ns = "points_marker"
+        marker.id = 1
+        marker.type = Marker.POINTS
+        marker.action = Marker.ADD
+        # Scale of the points
+        marker.scale.x = 0.02  # Point width
+        marker.scale.y = 0.02  # Point height
+        # Color of the points (same for all points)
+        marker.color.r = 0.0
+        marker.color.g = 1.0
+        marker.color.b = 0.0
+        marker.color.a = 1.0
+        # Add points to the marker
+        marker.points.extend(points)
+        # Publish the marker
+        self.marker_pub.publish(marker)
+    
     def serial_send(self, point):
         if point is not None:	 
             if not math.isnan(point[1]):
@@ -196,7 +226,7 @@ class PointCloudVisualizer:
         self.points_x_minus_0_14 = all_points[np.isclose(all_points[:, 0], -0.14, atol=0.007)]#[:,0] : means all row,0 means first column
         #self.points_x_0_14 = all_points[np.isclose(all_points[:, 0], 0.14, atol=0.007)] 
         #test_time = time.time()
-        averaged_points_r = self.average_y(self.points_x_minus_0_14)
+        averaged_points_r = self.average_y(np.round(self.points_x_minus_0_14,2))
         #test1_time = time.time()
         
         #print("read_data:",start_time-test_time)

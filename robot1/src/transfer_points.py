@@ -41,7 +41,7 @@ class PointCloudVisualizer:
         y_valid = np.round(y[valid_mask],3)
         z_valid = np.round(z[valid_mask],3)
         self.points = np.stack((x_valid, y_valid, z_valid), axis=-1)
-        #print("shape:",self.points.shape)
+        print("shape:",self.points.shape)
         read_time_1 = time.time()
 
         
@@ -53,7 +53,7 @@ class PointCloudVisualizer:
         self.path_points[:, 1] = np.round(self.transformed_points[:, 1], 3)  # Round y (second column) to 3 decimal places
         self.path_points[:, 2] = np.round(self.transformed_points[:, 2], 3)
         
-        #print("read_time",read_time_1-start_time)
+        print("read_time",read_time_1-start_time)
         self.publish_filtered_points(self.path_points)
 
     def apply_rpy_transformation(self, points):
@@ -71,6 +71,7 @@ class PointCloudVisualizer:
         else:
             self.pz = self.height * np.sin(np.radians(self.angle))
         
+        #print(f'self.py:{self.py},self.pz:{self.pz}')
         translation = np.array([self.px, self.py, self.pz])
         points += translation
 
@@ -97,7 +98,7 @@ class PointCloudVisualizer:
 
     def callback_imu(self, data):
         # Update roll, pitch, and yaw from the IMU data
-        self.pitch = data.x- 27.4
+        self.pitch = data.x
         self.roll = data.y
         self.yaw = data.z
         #print(f"pitch:{self.pitch},yaw:{self.yaw},roll:{self.roll}")
